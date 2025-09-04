@@ -362,49 +362,23 @@
     </div>
 
     <!-- Deposit Modal -->
-<div id="depositModal" class="modal-overlay hidden">
-  <div class="modal-content text-center bg-gray-900 p-6 rounded-lg shadow-lg max-w-md mx-auto relative">
-    
-    <!-- Close Button -->
-    <span class="close-modal absolute top-2 right-3 text-2xl cursor-pointer text-gray-400">&times;</span>
-    
-    <h2 class="text-2xl font-bold mb-6 text-white">Deposit</h2>
+<div id="depositModal" class="hidden">
+  <input id="coinSearch" type="text" placeholder="Search coin..." class="w-full p-2 mb-2 rounded bg-gray-800">
+  <div id="coinList" class="space-y-2"></div>
 
-    <!-- Search coin -->
-    <input type="text" id="coinSearch" placeholder="Search Coin" 
-      class="w-full p-2 mb-4 rounded bg-gray-800 text-white border border-gray-600">
-
-    <!-- Coin List -->
-    <div id="coinList" class="coin-list space-y-2 max-h-48 overflow-y-auto text-left"></div>
-
-    <!-- Network Selection -->
-    <div id="networkSection" style="display:none;" class="mt-6">
-      <h3 class="text-xl font-semibold text-white mb-4">Select Network</h3>
-      <div class="grid grid-cols-2 gap-3">
-        <button class="networkBtn bg-gray-700 p-3 rounded-lg flex items-center justify-center space-x-2" data-network="BTC">
-          <svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="orange"></circle></svg>
-          <span>Bitcoin</span>
-        </button>
-        <button class="networkBtn bg-gray-700 p-3 rounded-lg flex items-center justify-center space-x-2" data-network="ETH">
-          <svg width="16" height="16"><rect width="16" height="16" fill="blue"></rect></svg>
-          <span>Ethereum</span>
-        </button>
-        <button class="networkBtn bg-gray-700 p-3 rounded-lg flex items-center justify-center space-x-2" data-network="BSC">
-          <svg width="16" height="16"><polygon points="8,0 16,16 0,16" fill="yellow"></polygon></svg>
-          <span>BNB Chain</span>
-        </button>
-        <button class="networkBtn bg-gray-700 p-3 rounded-lg flex items-center justify-center space-x-2" data-network="TRC">
-          <svg width="16" height="16"><polygon points="0,0 16,0 8,16" fill="red"></polygon></svg>
-          <span>Tron</span>
-        </button>
+  <!-- After coin selection -->
+  <div id="networkSection" style="display:none;" class="mt-4">
+      <h3>Select Network</h3>
+      <div class="flex space-x-2">
+          <button class="networkBtn bg-gray-700 px-3 py-2 rounded" data-network="BTC">BTC</button>
+          <button class="networkBtn bg-gray-700 px-3 py-2 rounded" data-network="ETH">ETH</button>
+          <button class="networkBtn bg-gray-700 px-3 py-2 rounded" data-network="BSC">BSC</button>
+          <button class="networkBtn bg-gray-700 px-3 py-2 rounded" data-network="TRC">TRC</button>
       </div>
-    </div>
-
-    <!-- Deposit Address & QR -->
-    <div id="depositAddressSection" style="display:none;" class="mt-6 text-white"></div>
   </div>
-</div>
 
+  <div id="depositAddressSection" style="display:none;" class="mt-4"></div>
+</div>
 
     <!-- Withdrawal Modal -->
     <div id="withdrawModal" class="modal-overlay hidden">
@@ -1263,14 +1237,15 @@
                 document.getElementById('searchAppBtn').addEventListener('click', () => { console.log("This button simulates opening the search modal for the main app."); });
                 document.getElementById('notificationsBtn').addEventListener('click', () => showPage('notificationsPage'));
                 document.getElementById('settingsBtn').addEventListener('click', () => showPage('settingsPage'));
-                // ===============================
+                
+               // ===============================
 // Deposit / Withdrawal Modal Logic
 // ===============================
 
 // Open Deposit Modal
 document.getElementById('assetsDepositBtn').addEventListener('click', () => { 
     showModal(depositModal); 
-    loadCoins(); // dynamically load coins from CoinGecko
+    loadCoins(); // dynamically load coins from CoinGecko when modal opens
 });
 
 // Open Withdraw Modal
@@ -1382,7 +1357,7 @@ function simulateDeposit(coin){
     updateWalletBalance(coin, parsed);
     alert(`${parsed} ${coin.toUpperCase()} deposited successfully!`);
     hideModal('depositModal');
-        }
+       }
 
                 const startWithdrawalCountdown = () => {
                     const countdownDisplay = document.getElementById('countdownTimer');
