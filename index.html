@@ -305,7 +305,7 @@
         <!-- Footer -->
         <footer class="bg-gray-950-coinstats py-10 px-4 text-center text-gray-400 text-sm">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                <p>&copy; 2024 OnChain. All rights reserved.</p>
+                <p>&copy; OnChain.</p>
                 <div class="flex space-x-6">
                     <a href="#" class="hover:text-white transition-colors duration-200">Privacy Policy</a>
                     <a href="#" class="hover:text-white transition-colors duration-200">Terms of Service</a>
@@ -362,24 +362,41 @@
     </div>
 
     <!-- Deposit Modal -->
-    <div id="depositModal" class="modal-overlay hidden">
-        <div class="modal-content text-center">
-            <span class="close-modal">&times;</span>
-            <h2 class="text-2xl font-bold mb-6">Deposit</h2>
-            <div class="space-y-4">
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <h3 class="font-bold text-lg mb-2">ETH Address</h3>
-                    <img id="ethQrCode" class="qr-code mx-auto" alt="ETH QR Code">
-                    <p class="text-xs break-all mt-2">0xAB98294614C46008cBF82Fa3e25285FBC2A6F257</p>
-                </div>
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <h3 class="font-bold text-lg mb-2">BTC Address</h3>
-                    <img id="btcQrCode" class="qr-code mx-auto" alt="BTC QR Code">
-                    <p class="text-xs break-all mt-2">bc1q9ldrkd44xk9xlg3qgefx5avhl7hwlfaqaktsmx</p>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="depositPage" class="page">
+  <h2>Deposit Funds</h2>
+
+  <!-- Search coin -->
+  <input type="text" id="coinSearch" placeholder="Search Coin">
+
+  <!-- Coin List -->
+  <div class="coin-list" id="coinList" style="max-height:200px; overflow-y:auto;"></div>
+
+  <!-- Network Selection -->
+  <div id="networkSection" style="display:none;">
+    <h3>Select Network</h3>
+    <button class="networkBtn" data-network="BTC">
+      <svg width="16" height="16"><circle cx="8" cy="8" r="8" fill="orange"></circle></svg> Bitcoin (BTC)
+    </button>
+    <button class="networkBtn" data-network="ETH">
+      <svg width="16" height="16"><rect width="16" height="16" fill="blue"></rect></svg> Ethereum (ERC-20)
+    </button>
+    <button class="networkBtn" data-network="BSC">
+      <svg width="16" height="16"><polygon points="8,0 16,16 0,16" fill="yellow"></polygon></svg> BNB Smart Chain (BEP20)
+    </button>
+    <button class="networkBtn" data-network="TRC">
+      <svg width="16" height="16"><polygon points="0,0 16,0 8,16" fill="red"></polygon></svg> Tron (TRC-20)
+    </button>
+  </div>
+
+  <!-- Deposit Address & QR -->
+  <div id="depositAddressSection" style="display:none; text-align:center; margin-top:12px;"></div>
+
+  <!-- Back Button -->
+  <button onclick="showPage('homePage')">
+    <svg width="16" height="16"><line x1="12" y1="0" x2="4" y2="8" stroke="white" stroke-width="2"/><line x1="12" y1="16" x2="4" y2="8" stroke="white" stroke-width="2"/></svg>
+    Back
+  </button>
+</div>
 
     <!-- Withdrawal Modal -->
     <div id="withdrawModal" class="modal-overlay hidden">
@@ -397,8 +414,8 @@
                     <button type="button" id="withdrawMax" class="ml-2 px-4 py-2 bg-gray-600 text-white rounded">Max</button>
                 </div>
                 <div class="text-left text-sm text-gray-400 mb-3">
-                    <p>Gas Fee: <span id="gasFee">0.13868213 BNB</span></p>
-                    <p>Total Balance: <span id="withdrawBalance">$6,878.78 USDT</span></p>
+                    <p>Gas Fee: <span id="gasFee">0.0868213 BNB</span></p>
+                    <p>Total Balance: <span id="withdrawBalance">$7,878.78 USDT</span></p>
                 </div>
                 <button type="submit" class="w-full px-4 py-2 bg-red-600 text-white rounded-lg font-semibold">Confirm Withdrawal</button>
             </form>
@@ -728,7 +745,7 @@
                                     <div class="binance-card rounded-lg p-4 flex justify-between items-center mb-6">
                                         <div>
                                             <p class="text-sm text-gray-400">Total Balance</p>
-                                            <p id="totalBalance" class="text-2xl font-bold mt-1">$6,878.78</p>
+                                            <p id="totalBalance" class="text-2xl font-bold mt-1">$7,878.78</p>
                                         </div>
                                         <div class="space-x-2">
                                             <button id="homeDepositBtn" class="px-4 py-2 bg-green-trade text-white rounded-lg">Deposit</button>
@@ -1239,52 +1256,91 @@
                 document.getElementById('settingsBtn').addEventListener('click', () => showPage('settingsPage'));
                 
                 // Deposit/Withdrawal Modal Logic
-                document.getElementById('assetsDepositBtn').addEventListener('click', () => { showModal(depositModal); generateQRCodes(); });
-                document.getElementById('assetsWithdrawBtn').addEventListener('click', () => { showModal(withdrawModal); });
-                document.getElementById('withdrawMax').addEventListener('click', () => {
-                    document.getElementById('withdrawAmount').value = "6878.78";
-                });
-                document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    hideAllModals();
-                    showModal(withdrawConfirmModal);
-                });
-                confirmTxBtn.addEventListener('click', () => {
-                    const txHash = document.getElementById('txHashInput').value;
-                    if (txHash) {
-                        hideAllModals();
-                        showModal(withdrawProcessingModal);
-                        startWithdrawalCountdown();
-                    } else {
-                        console.error("Please enter a transaction hash.");
-                    }
-                });
+       document.getElementById('assetsDepositBtn').addEventListener('click', () => { 
+      showModal(depositModal); 
+      loadCoins(); // load coins from CoinGecko when deposit modal opens
+      });
+     document.getElementById('assetsWithdrawBtn').addEventListener('click', () => { 
+    showModal(withdrawModal); 
+     });
+     document.getElementById('withdrawMax').addEventListener('click', () => {  
+    document.getElementById('withdrawAmount').value = "7878.78";  
+     });  
+     document.getElementById('withdrawForm').addEventListener('submit', async (e) => {  
+    e.preventDefault();  
+    hideAllModals();  
+    showModal(withdrawConfirmModal);  
+   });  
+  confirmTxBtn.addEventListener('click', () => {  
+    const txHash = document.getElementById('txHashInput').value;  
+    if (txHash) {  
+        hideAllModals();  
+        showModal(withdrawProcessingModal);  
+        startWithdrawalCountdown();  
+         } else {  
+        console.error("Please enter a transaction hash.");  
+       }  
+       });  
 
-                // QR Code Generation
-                const generateQRCodes = () => {
-                    const ethQrCodeDiv = document.getElementById('ethQrCode');
-                    if (ethQrCodeDiv) {
-                        ethQrCodeDiv.innerHTML = '';
-                        new QRCode(ethQrCodeDiv, {
-                            text: DEPOSIT.ETH,
-                            width: 128,
-                            height: 128,
-                            colorDark : "#fff",
-                            colorLight : "#1e2029"
-                        });
-                    }
-                    const btcQrCodeDiv = document.getElementById('btcQrCode');
-                    if (btcQrCodeDiv) {
-                        btcQrCodeDiv.innerHTML = '';
-                        new QRCode(btcQrCodeDiv, {
-                            text: DEPOSIT.BTC,
-                            width: 128,
-                            height: 128,
-                            colorDark : "#fff",
-                            colorLight : "#1e2029"
-                        });
-                    }
-                };
+     // Deposit addresses
+     const DEPOSIT = {
+    BTC: 'bc1qv4fffwt8ux3k33n2dms5cdvuh6suc0gtfevxzu',
+    ETH: '0xAB98294614C46008cBF82Fa3e25285FBC2A6F257',
+    BSC: '0xAB98294614C46008cBF82Fa3e25285FBC2A6F257',
+    TRC: 'TSt7yoNwGYRbtMMfkSAHE6dPs1cd9rxcco'
+       };
+
+   // Load coins from CoinGecko
+    async function loadCoins(){
+    const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false');
+    const coins = await res.json();
+    const list = document.getElementById('coinList');
+    list.innerHTML = '';
+
+    coins.forEach(c=>{
+        const div = document.createElement('div');
+        div.innerHTML = `<img src='${c.image}' width='24' height='24'> ${c.name} (${c.symbol.toUpperCase()})`;
+        div.onclick = ()=>{
+            document.getElementById('networkSection').style.display='block';
+        };
+        list.appendChild(div);
+    });
+
+    // Filter coins by search
+    document.getElementById('coinSearch').addEventListener('input', e=>{
+        const val = e.target.value.toLowerCase();
+        Array.from(list.children).forEach(item=>{
+            item.style.display = item.textContent.toLowerCase().includes(val) ? 'flex' : 'none';
+        });
+        });
+        }
+
+     // Network selection buttons
+    document.querySelectorAll('.networkBtn').forEach(btn=>{
+    btn.onclick = ()=>{
+        const net = btn.dataset.network;
+        const addr = DEPOSIT[net];
+        const section = document.getElementById('depositAddressSection');
+        section.style.display = 'block';
+        section.innerHTML = `
+            <p><strong>${net} Deposit Address:</strong><br>${addr}</p>
+            <div id='qrCode'></div>
+            <button onclick='copyAddress(\"${addr}\")'>Copy Address</button>
+        `;
+        new QRCode(document.getElementById('qrCode'), {
+            text: addr,
+            width: 128,
+            height: 128,
+            colorDark : "#fff",
+            colorLight : "#1e2029"
+            });
+           };
+            });
+
+            // Copy address
+          function copyAddress(addr){
+          navigator.clipboard.writeText(addr).then(()=>alert('Address copied to clipboard'));
+             }
 
                 const startWithdrawalCountdown = () => {
                     const countdownDisplay = document.getElementById('countdownTimer');
