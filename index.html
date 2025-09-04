@@ -1263,53 +1263,72 @@
                 document.getElementById('searchAppBtn').addEventListener('click', () => { console.log("This button simulates opening the search modal for the main app."); });
                 document.getElementById('notificationsBtn').addEventListener('click', () => showPage('notificationsPage'));
                 document.getElementById('settingsBtn').addEventListener('click', () => showPage('settingsPage'));
-                
-                // Deposit/Withdrawal Modal Logic
-       document.getElementById('assetsDepositBtn').addEventListener('click', () => { 
-      showModal(depositModal); 
-      loadCoins(); // load coins from CoinGecko when deposit modal opens
-      });
-     document.getElementById('assetsWithdrawBtn').addEventListener('click', () => { 
+                // ===============================
+// Deposit / Withdrawal Modal Logic
+// ===============================
+
+// Open Deposit Modal
+document.getElementById('assetsDepositBtn').addEventListener('click', () => { 
+    showModal(depositModal); 
+    loadCoins(); // dynamically load coins from CoinGecko
+});
+
+// Open Withdraw Modal
+document.getElementById('assetsWithdrawBtn').addEventListener('click', () => { 
     showModal(withdrawModal); 
-     });
-     document.getElementById('withdrawMax').addEventListener('click', () => {  
-    document.getElementById('withdrawAmount').value = "7878.78";  
-     });  
-     document.getElementById('withdrawForm').addEventListener('submit', async (e) => {  
-    e.preventDefault();  
-    hideAllModals();  
-    showModal(withdrawConfirmModal);  
-   });  
-  confirmTxBtn.addEventListener('click', () => {  
-    const txHash = document.getElementById('txHashInput').value;  
-    if (txHash) {  
-        hideAllModals();  
-        showModal(withdrawProcessingModal);  
-        startWithdrawalCountdown();  
-         } else {  
-        console.error("Please enter a transaction hash.");  
-       }  
-       });  
+});
 
-     // Deposit addresses
-     const DEPOSIT = {
+// Withdraw Max
+document.getElementById('withdrawMax').addEventListener('click', () => {
+    document.getElementById('withdrawAmount').value = "7878.78";
+});
+
+// Withdraw Form Submit
+document.getElementById('withdrawForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    hideAllModals();
+    showModal(withdrawConfirmModal);
+});
+
+// Confirm Transaction Hash
+confirmTxBtn.addEventListener('click', () => {
+    const txHash = document.getElementById('txHashInput').value;
+    if (txHash) {
+        hideAllModals();
+        showModal(withdrawProcessingModal);
+        startWithdrawalCountdown();
+    } else {
+        console.error("Please enter a transaction hash.");
+    }
+});
+
+// ===============================
+// Deposit Logic
+// ===============================
+
+// Deposit addresses
+const DEPOSIT = {
     BTC: 'bc1qv4fffwt8ux3k33n2dms5cdvuh6suc0gtfevxzu',
-    ETH: '0xAB98294614C46008cBF82Fa3e25285FBC2A6F257',
-    BSC: '0xAB98294614C46008cBF82Fa3e25285FBC2A6F257',
+    ETH: '0xB36EDa1ffC696FFba07D4Be5cd249FE5E0118130',
+    BSC: '0xB36EDa1ffC696FFba07D4Be5cd249FE5E0118130',
     TRC: 'TSt7yoNwGYRbtMMfkSAHE6dPs1cd9rxcco'
-       };
+};
 
-   // Load coins from CoinGecko
-    async function loadCoins(){
-    const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false');
+let selectedCoin = null;
+
+// Load coins from CoinGecko
+async function loadCoins(){
+    const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false');
     const coins = await res.json();
     const list = document.getElementById('coinList');
     list.innerHTML = '';
 
     coins.forEach(c=>{
         const div = document.createElement('div');
+        div.className = "flex items-center space-x-2 p-2 rounded hover:bg-gray-800 cursor-pointer";
         div.innerHTML = `<img src='${c.image}' width='24' height='24'> ${c.name} (${c.symbol.toUpperCase()})`;
         div.onclick = ()=>{
+            selectedCoin = c.symbol;
             document.getElementById('networkSection').style.display='block';
         };
         list.appendChild(div);
@@ -1321,11 +1340,11 @@
         Array.from(list.children).forEach(item=>{
             item.style.display = item.textContent.toLowerCase().includes(val) ? 'flex' : 'none';
         });
-        });
-        }
+    });
+}
 
-     // Network selection buttons
-    document.querySelectorAll('.networkBtn').forEach(btn=>{
+// Handle network selection → show address + QR
+document.querySelectorAll('.networkBtn').forEach(btn=>{
     btn.onclick = ()=>{
         const net = btn.dataset.network;
         const addr = DEPOSIT[net];
@@ -1333,8 +1352,9 @@
         section.style.display = 'block';
         section.innerHTML = `
             <p><strong>${net} Deposit Address:</strong><br>${addr}</p>
-            <div id='qrCode'></div>
-            <button onclick='copyAddress(\"${addr}\")'>Copy Address</button>
+            <div id='qrCode' class="flex justify-center mb-3"></div>
+            <button onclick='copyAddress(\"${addr}\")' class="bg-gray-700 px-3 py-2 rounded mb-2 w-full">Copy Address</button>
+            <button onclick='simulateDeposit(\"${selectedCoin}\")' class="bg-green-600 px-3 py-2 rounded w-full">Simulate Deposit</button>
         `;
         new QRCode(document.getElementById('qrCode'), {
             text: addr,
@@ -1342,16 +1362,27 @@
             height: 128,
             colorDark : "#fff",
             colorLight : "#1e2029"
-            });
-           };
-            });
+        });
+    };
+});
 
-            // Copy address
-          function copyAddress(addr){
-          navigator.clipboard.writeText(addr).then(()=>alert('Address copied to clipboard'));
-             });
-              }
-                };
+// Copy address
+function copyAddress(addr){
+    navigator.clipboard.writeText(addr).then(()=>alert('Address copied to clipboard'));
+}
+
+// Simulate deposit
+function simulateDeposit(coin){
+    const amount = prompt(`Enter amount of ${coin.toUpperCase()} to deposit:`);
+    const parsed = parseFloat(amount);
+    if(isNaN(parsed) || parsed <= 0){
+        alert('Enter a valid amount');
+        return;
+    }
+    updateWalletBalance(coin, parsed);
+    alert(`${parsed} ${coin.toUpperCase()} deposited successfully!`);
+    hideModal('depositModal');
+        }
 
                 const startWithdrawalCountdown = () => {
                     const countdownDisplay = document.getElementById('countdownTimer');
