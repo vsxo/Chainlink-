@@ -360,26 +360,9 @@
             </div>
         </div>
     </div>
-
-    <!-- Deposit Modal -->
-<div id="depositModal" class="hidden">
-  <input id="coinSearch" type="text" placeholder="Search coin..." class="w-full p-2 mb-2 rounded bg-gray-800">
-  <div id="coinList" class="space-y-2"></div>
-
-  <!-- After coin selection -->
-  <div id="networkSection" style="display:none;" class="mt-4">
-      <h3>Select Network</h3>
-      <div class="flex space-x-2">
-          <button class="networkBtn bg-gray-700 px-3 py-2 rounded" data-network="BTC">BTC</button>
-          <button class="networkBtn bg-gray-700 px-3 py-2 rounded" data-network="ETH">ETH</button>
-          <button class="networkBtn bg-gray-700 px-3 py-2 rounded" data-network="BSC">BSC</button>
-          <button class="networkBtn bg-gray-700 px-3 py-2 rounded" data-network="TRC">TRC</button>
-      </div>
-  </div>
-
-  <div id="depositAddressSection" style="display:none;" class="mt-4"></div>
-</div>
-
+           
+    
+    
     <!-- Withdrawal Modal -->
     <div id="withdrawModal" class="modal-overlay hidden">
         <div class="modal-content text-center">
@@ -1242,11 +1225,12 @@
                       // Deposit / Withdrawal Modal Logic
                     // ===============================
 
-                    // Open Deposit Modal
-                document.getElementById('assetsDepositBtn').addEventListener('click', () => { 
-                showModal(depositModal);       // Show the deposit modal
-                loadCoins();                   // Dynamically load coins from CoinGecko
-               });
+                    
+          // Open Deposit Modal
+         const depositBtn = document.getElementById('assetsDepositBtn');
+         if (depositBtn) {
+         depositBtn.addEventListener('click', () => {    });
+            }
   
            // Open Withdraw Modal
         document.getElementById('assetsWithdrawBtn').addEventListener('click', () => { 
